@@ -2,7 +2,7 @@
   <artifact type="jar" name="VillagerMarket">
     <output-path>$PROJECT_DIR$/out/artifacts/</output-path>
     <root id="archive" name="VillagerMarket.jar">
-      <element id="module-output" name="ShopPlugin" />
+      <element id="module-output" name="VillagerMarket" />
     </root>
   </artifact>
 </component>
