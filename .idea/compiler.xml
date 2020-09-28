@@ -10,7 +10,6 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="maven" target="1.5" />
       <module name="VillagerMarket" target="8" />
     </bytecodeTargetLevel>
   </component>
