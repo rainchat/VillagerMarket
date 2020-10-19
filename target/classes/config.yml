@@ -10,8 +10,12 @@ auto_save_interval: 10
 tax: 0
 #Set currency symbol
 currency: '$'
+#Should the currency symbol be placed before worth?
+currency_before: false
 #Should activity log be saved when server/plugin restarts?
 auto_log: false
+#Chat input used to cancel actions
+cancel: 'cancel'
 
 #----------------------- Messages & Sounds -----------------------#
 
@@ -19,13 +23,14 @@ messages:
   reloaded: '&aPlugin reloaded!'
   cancelled: '&cAction was cancelled!'
   not_number: '&cYou must type a number!'
+  use_dot: '&cUse dot instead of comma for decimals!'
   not_valid_range: '&cAmount must be between 1 and 64!'
   amount_successful: '&aAmount set successfully!'
   negative_price: '&cPrice can not be negative!'
   add_successful: '&aItem added successfully!'
-  type_price: '&bPlease type the price you wish to sell/buy for in chat...'
-  type_amount: '&bPlease type the amount you wish to sell/buy in chat...'
-  type_cancel: '&bOr type &ccancel &bto cancel'
+  type_price: '&bPlease type the price in chat...'
+  type_amount: '&bPlease type the amount in chat...'
+  type_cancel: '&bOr type &c%cancel% &bto cancel' #Placeholder: %cancel% (see cancel option above)
   type_price_for_shop: '&bPlease type the price you wish to sell your shop for...'
   sold_shop: '&bShop sold! It is now available for purchase again!'
   not_enough_money: '&cYou do not have enough money to buy this!'
@@ -49,17 +54,18 @@ messages:
   move_villager_to: '&7Click a block to move the villager!'
   max_rent_time: '&cCan not increase time further. Maximum rent time is reached!'
   search_result: '&7Found &b%amount% &7Villager Shops nearby!'
+  search_shop_info: '&7>> %name% &7at location: &c%location%'
   get_stats: '&7Right click a &bVillager Shop &7to get the statistics!'
   not_owner: '&cYou are not the owner of this Villager Shop!'
   type_max: '&bPlease type the maximum amount you want to buy in the chat (&c0 &bfor unlimited)...'
-  reached_max_buy: '&cThe shop owner does not wish to buy any more of this item!'
+  reached_sell_limit: '&cYou can not sell more of this item!'
 
 stats_message:
   - '&bVillager Shop stats:'
-  - 'Items sold: &a%items_sold%'
-  - 'Items bought: &a%items_bought%'
-  - 'Money earned: &a%money_earned%'
-  - 'Money spent: &a%money_spent%'
+  - '>> Items sold: &a%items_sold%'
+  - '>> Items bought: &a%items_bought%'
+  - '>> Money earned: &a%money_earned%'
+  - '>> Money spent: &a%money_spent%'
 
 sounds:
   create_shop: ENTITY_VILLAGER_TRADE
@@ -79,6 +85,21 @@ sounds:
   increase_time: ENTITY_EXPERIENCE_ORB_PICKUP
 
 
+#----------------------- Localization -----------------------#
+
+#Time localization
+time:
+  seconds: 'seconds'
+  minutes: 'minutes'
+  hours: 'hours'
+  days: 'days'
+  indefinitely: 'indefinitely'
+#Quantity localization
+quantity:
+  infinite: 'infinite'
+  unlimited: 'unlimited'
+
+
 #----------------------- Villager settings -----------------------#
 
 #These are the default settings for created Villager Shops
@@ -95,13 +116,6 @@ villager:
 max_rent: 30
 #How often should temporary shops be checked? (seconds)
 expire_check_interval: 10
-#Time localization
-time:
-  seconds: 'seconds'
-  minutes: 'minutes'
-  hours: 'hours'
-  days: 'days'
-  indefinitely: 'indefinitely'
 
 
 #--------------------- Menu items settings ---------------------#
@@ -124,6 +138,7 @@ items:
 #----------------------- Menus settings -----------------------#
 
 menus:
+  #-------------------- Buy Shop --------------------#
   #Menu for buying shop
   buy_shop:
     title: '&8Buy available shop'
@@ -143,6 +158,8 @@ menus:
           - ''
           - '&7The shop will be'
           - '&7yours for &b%time%&7!'
+
+  #-------------------- Edit Shop --------------------#
   #Menu for shop editor
   edit_shop:
     title: '&8Edit shop'
@@ -203,8 +220,39 @@ menus:
           - ''
           - '&7Click to increase your rent'
           - '&7time by &b%time%&7 for &a%price%&7!'
-          -
-  #Edit shopfront menu. (Add/remove items)
+
+  #-------------------- Shop Front --------------------#
+  #Buy/sell items menu (This is the menu for customers)
+  shopfront:
+    title: '&8Buy items'
+    item_name: '&f%item_name% %mode%' #Placeholders: %item_name%, %mode%
+    detail_suffix: '&8(Details)'
+    modes:
+      buy: '&8[&aBUY&8]'
+      sell: '&8[&aSELL&8]'
+    player:
+      buy_lore: #Placeholders: %amount%, %price%, %stock%
+        - '&7Amount: &e%amount%'
+        - '&7Price: &a%price%'
+        - '&7Currently &b%stock% &7in stock!'
+        - ''
+      sell_lore: #Placeholders: %amount%, %price%, %available%
+        - '&7Amount: &e%amount%'
+        - '&7Price: &a%price%'
+        - '&7You can sell &c%available% &7more!'
+        - ''
+    admin:
+      buy_lore:
+        - '&7Amount: &e%amount%'
+        - '&7Price: &a%price%'
+        - ''
+      sell_lore:
+        - '&7Amount: &e%amount%'
+        - '&7Price: &a%price%'
+        - ''
+
+  #------------------ Edit Shop Front ------------------#
+  #Edit shopfront menu. (Add/remove/edit items)
   edit_shopfront:
     title: '&8Add items for sale'
     item_name: '&f%item_name% %mode%' #Placeholders: %item_name%, %mode%
@@ -222,16 +270,16 @@ menus:
         - '&7>> Left click &7to toggle: &e&nsell&8 | &7buy'
         - ''
         - '&7>> Shift click to &bquick-add&7 items!'
-      buy_lore: #Placeholders: %amount%, %price%, %money%
+      buy_lore: #Placeholders: %amount%, %price%, %available%, %limit%
         - '&7Amount: &e%amount%'
         - '&7Price: &a%price%'
-        - '&7You have &a%money% &7left!'
+        - '&7You can buy &c%available% &7more!'
         - ''
         - '&7>> Right click &7to &cremove'
         - '&7>> Middle click to &aedit'
         - '&7>> Left click &7to toggle: sell&8 | &e&nbuy'
         - ''
-        - '&7>> Shift click to set &cbuy limit &7(Now: &b%max%&7)'
+        - '&7>> Shift click to set buy limit &7(Now: &b%limit%&7)'
     admin:
       sell_lore:
         - '&7Amount: &e%amount%'
@@ -247,37 +295,12 @@ menus:
         - '&7>> Right click &7to &cremove'
         - '&7>> Middle click to &aedit'
         - '&7>> Left click &7to toggle: sell&8 | &e&nbuy'
-  #Buy/sell items menu (This is the menu for customers)
-  shopfront:
-    title: '&8Buy items'
-    item_name: '&f%item_name% %mode%' #Placeholders: %item_name%, %mode%
-    detail_suffix: '&8(Details)'
-    modes:
-      buy: '&8[&aBUY&8]'
-      sell: '&8[&aSELL&8]'
-    player:
-      buy_lore: #Placeholders: %amount%, %price%, %stock%
-        - '&7Amount: &e%amount%'
-        - '&7Price: &a%price%'
-        - '&7Currently &b%stock% &7in stock!'
-        - ''
-      sell_lore: #Placeholders: %amount%, %price%, %money%
-        - '&7Amount: &e%amount%'
-        - '&7Price: &a%price%'
-        - '&7Owner has &a%money% &7left!'
-        - ''
-    admin:
-      buy_lore:
-        - '&7Amount: &e%amount%'
-        - '&7Price: &a%price%'
-        - ''
-      sell_lore:
-        - '&7Amount: &e%amount%'
-        - '&7Price: &a%price%'
-        - ''
-  #Edit storage menu
+
+  #--------------------- Storage ---------------------#
   edit_storage:
     title: '&8Edit storage'
+
+  #------------------ Edit Villager ------------------#
   #Edit villager menu
   edit_villager:
     title: '&8Edit villager'
@@ -290,6 +313,8 @@ menus:
       fisherman: '&bFisherman'
       leatherworker: '&cLeatherworker'
       librarian: '&6Librarian'
+
+  #-------------------- Sell Shop --------------------#
   #Sell shop menu
   sell_shop:
     title: '&8Are you sure?'
