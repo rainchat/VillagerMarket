@@ -82,6 +82,9 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.bstats:bstats-bukkit:1.7" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: me.clip:placeholderapi:2.10.9" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.jetbrains:annotations:19.0.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: net.citizensnpcs:citizens-main:2.0.27" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: net.citizensnpcs:citizens-main:2.0.27-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: net.sf.trove4j:trove4j:3.0.3" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: net.citizensnpcs:citizensapi:2.0.27-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: ch.ethz.globis.phtree:phtree:2.3.0" level="project" />
   </component>
 </module>

@@ -1,3 +1,4 @@
 me\bestem0r\villagermarket\utilities\Placeholders.class
+me\bestem0r\villagermarket\events\dynamic\SetSkin.class
 me\bestem0r\villagermarket\EntityInfo.class
 me\bestem0r\villagermarket\events\ChunkLoad.class
