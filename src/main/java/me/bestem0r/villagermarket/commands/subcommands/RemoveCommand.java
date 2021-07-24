@@ -8,7 +8,6 @@ import me.bestem0r.villagermarket.utilities.ColorBuilder;
 import me.bestem0r.villagermarket.utilities.Methods;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
-import net.citizensnpcs.api.npc.NPCRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;

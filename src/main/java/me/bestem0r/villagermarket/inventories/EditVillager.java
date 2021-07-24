@@ -4,18 +4,15 @@ import me.bestem0r.villagermarket.VMPlugin;
 import me.bestem0r.villagermarket.utilities.ColorBuilder;
 import me.bestem0r.villagermarket.utilities.Methods;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Villager;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.List;
 import java.util.Locale;
 
 public class EditVillager {
 
-    public EditVillager() {}
+    public EditVillager() {
+    }
 
     public static Inventory create(VMPlugin plugin) {
         Inventory inventory = Bukkit.createInventory(null, 18, new ColorBuilder(plugin).path("menus.edit_villager.title").build());

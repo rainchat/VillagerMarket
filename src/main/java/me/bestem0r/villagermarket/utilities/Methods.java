@@ -21,8 +21,6 @@ import java.util.UUID;
 
 public class Methods {
 
-    private Methods() {}
-
     private static final List<Villager.Profession> professions = Arrays.asList(
             Villager.Profession.ARMORER,
             Villager.Profession.BUTCHER,
@@ -34,7 +32,12 @@ public class Methods {
             Villager.Profession.LIBRARIAN
     );
 
-    /** Returns Villager Shop based on EntityUUID */
+    private Methods() {
+    }
+
+    /**
+     * Returns Villager Shop based on EntityUUID
+     */
     public static VillagerShop shopFromUUID(UUID uuid) {
         for (VillagerShop villagerShop : VMPlugin.shops) {
             if (villagerShop.getEntityUUID().equals(uuid)) {
@@ -44,7 +47,9 @@ public class Methods {
         return null;
     }
 
-    /** Creates ItemStack from path in config.yml */
+    /**
+     * Creates ItemStack from path in config.yml
+     */
     public static ItemStack stackFromPath(JavaPlugin plugin, String path) {
         FileConfiguration config = plugin.getConfig();
         ItemStack item = new ItemStack(Material.valueOf(config.getString(path + ".material")));
@@ -58,7 +63,9 @@ public class Methods {
     }
 
 
-    /** Saves/Resets Villager Config with default values */
+    /**
+     * Saves/Resets Villager Config with default values
+     */
     public static void newShopConfig(VMPlugin plugin, UUID entityUUID, int storageSize, int shopfrontSize, int cost, VillagerShop.VillagerType villagerType, String duration) {
         File file = new File(Bukkit.getServer().getPluginManager().getPlugin("VillagerMarket").getDataFolder() + "/Shops/", entityUUID + ".yml");
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
@@ -89,7 +96,9 @@ public class Methods {
         }
     }
 
-    /** Convert duration string to seconds */
+    /**
+     * Convert duration string to seconds
+     */
     public static int secondsFromString(String string) {
         if (string.equalsIgnoreCase("infinite")) return 0;
 
@@ -110,25 +119,33 @@ public class Methods {
         }
     }
 
-    /** Returns true if item is blacklisted, false if not */
+    /**
+     * Returns true if item is blacklisted, false if not
+     */
     public static boolean isBlackListed(JavaPlugin plugin, Material material) {
         List<String> blackList = plugin.getConfig().getStringList("item_blacklist");
         return blackList.contains(material.toString());
     }
 
-    /** Properly checks if the two ItemStacks are equal  */
+    /**
+     * Properly checks if the two ItemStacks are equal
+     */
     public static boolean compareItems(ItemStack item1, ItemStack item2) {
-        if (item1 == null || item2 == null) { return false; }
+        if (item1 == null || item2 == null) {
+            return false;
+        }
         ItemStack item1clone = item1.clone();
         ItemStack item2clone = item2.clone();
 
         item1clone.setAmount(1);
         item2clone.setAmount(1);
 
-        return  item1clone.toString().equals(item2clone.toString());
+        return item1clone.toString().equals(item2clone.toString());
     }
 
-    /** Spawns new Villager Entity and sets its attributes to default values */
+    /**
+     * Spawns new Villager Entity and sets its attributes to default values
+     */
     public static UUID spawnShop(VMPlugin plugin, Location location, String type) {
         World world = location.getWorld();
         Villager villager = (Villager) world.spawnEntity(location, EntityType.VILLAGER);
@@ -152,7 +169,9 @@ public class Methods {
                 .count();
     }
 
-    /** Returns new Villager Shop Item */
+    /**
+     * Returns new Villager Shop Item
+     */
     public static ItemStack villagerShopItem(VMPlugin plugin, int shopSize, int storageSize, int amount) {
 
         int maxAmount = (Math.min(amount, 64));

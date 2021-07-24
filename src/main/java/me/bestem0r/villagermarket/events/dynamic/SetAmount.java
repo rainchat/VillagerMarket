@@ -26,7 +26,7 @@ public class SetAmount implements Listener {
         this.builder = builder;
     }
 
-    @EventHandler (priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         if (event.getPlayer() != player) return;
         String message = event.getMessage();
@@ -55,9 +55,11 @@ public class SetAmount implements Listener {
         HandlerList.unregisterAll(this);
     }
 
-    @EventHandler (priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onEntityInteract(PlayerInteractEntityEvent event) {
-        if (event.getPlayer() != player) { return; }
+        if (event.getPlayer() != player) {
+            return;
+        }
         VillagerShop villagerShop = Methods.shopFromUUID(event.getRightClicked().getUniqueId());
         if (villagerShop != null) {
             player.sendMessage(new ColorBuilder(plugin).path("messages.finish_process").addPrefix().build());

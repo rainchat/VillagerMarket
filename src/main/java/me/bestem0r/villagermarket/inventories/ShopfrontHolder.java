@@ -26,6 +26,7 @@ public class ShopfrontHolder {
     public void open(Player player, Shopfront.Type type, int page) {
         shopfronts.get(page).open(player, type);
     }
+
     public void open(Player player, Shopfront.Type type) {
         update();
         open(player, type, 0);
@@ -41,7 +42,7 @@ public class ShopfrontHolder {
         for (int page = 1; page <= midPages; page++) {
             shopfronts.add(new Shopfront(plugin, this, shop, page));
         }
-        shopfronts.add(new Shopfront(plugin, this, shop,  (midPages + 1)));
+        shopfronts.add(new Shopfront(plugin, this, shop, (midPages + 1)));
     }
 
     public void reload() {

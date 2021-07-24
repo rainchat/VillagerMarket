@@ -24,11 +24,6 @@ public class TrustedCommand implements SubCommand {
 
     private final JavaPlugin plugin;
 
-    public enum Action {
-        ADD,
-        REMOVE
-    }
-
     public TrustedCommand(JavaPlugin plugin) {
         this.plugin = plugin;
     }
@@ -91,6 +86,11 @@ public class TrustedCommand implements SubCommand {
     @Override
     public String getDescription() {
         return "Remove/remove trusted: &6/vm trusted <add/remove> <player>";
+    }
+
+    public enum Action {
+        ADD,
+        REMOVE
     }
 
     private class TrustedEvent implements Listener {

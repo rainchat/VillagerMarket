@@ -16,13 +16,13 @@ import java.io.File;
 import java.util.Objects;
 
 public class EntityEvents implements Listener {
-    
+
     private final VMPlugin plugin;
-    
+
     public EntityEvents(VMPlugin plugin) {
         this.plugin = plugin;
     }
-    
+
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
         Entity entity = event.getEntity();
@@ -39,6 +39,7 @@ public class EntityEvents implements Listener {
             event.setCancelled(true);
         }
     }
+
     @EventHandler
     public void onHitEntity(EntityDamageByEntityEvent event) {
         if (Methods.shopFromUUID(event.getEntity().getUniqueId()) != null) {

@@ -44,10 +44,16 @@ public class PlayerShop extends VillagerShop {
     }
 
     public void updateRedstone(boolean forceOff) {
-        if (!plugin.isRedstoneEnabled()) { return; }
-        if (cost == -1) { return; }
+        if (!plugin.isRedstoneEnabled()) {
+            return;
+        }
+        if (cost == -1) {
+            return;
+        }
         Entity entity = Bukkit.getEntity(entityUUID);
-        if (entity == null) { return; }
+        if (entity == null) {
+            return;
+        }
 
         Location location = entity.getLocation();
         Material standingOn = entity.getLocation().clone().subtract(0, 1, 0).getBlock().getType();
@@ -58,7 +64,9 @@ public class PlayerShop extends VillagerShop {
         replace.setType(ownerUUID.equals("null") || forceOff ? Material.AIR : Material.REDSTONE_BLOCK);
     }
 
-    /** Buy item from the shop as the customer */
+    /**
+     * Buy item from the shop as the customer
+     */
     @Override
     protected void buyItem(int slot, Player player) {
         Economy economy = plugin.getEconomy();
@@ -123,7 +131,9 @@ public class PlayerShop extends VillagerShop {
         VMPlugin.log.add(new Date() + ": " + player.getName() + " bought " + amount + "x " + shopItem.getType() + " from " + ownerName + " (" + valueCurrency + ")");
     }
 
-    /** Sell item to the shop as the customer */
+    /**
+     * Sell item to the shop as the customer
+     */
     @Override
     protected void sellItem(int slot, Player player) {
         ShopItem shopItem = itemList.get(slot);
@@ -202,7 +212,9 @@ public class PlayerShop extends VillagerShop {
         }
     }
 
-    /** Edit shop front shift functions */
+    /**
+     * Edit shop front shift functions
+     */
     @Override
     protected void shiftFunction(InventoryClickEvent event, ShopItem shopItem) {
         Player player = (Player) event.getWhoClicked();
@@ -215,14 +227,20 @@ public class PlayerShop extends VillagerShop {
                 player.sendMessage(new ColorBuilder(plugin).path("messages.type_limit_player").addPrefix().build());
                 player.sendMessage(new ColorBuilder(plugin).path("messages.type_cancel").replace("%cancel%", cancel).addPrefix().build());
                 Bukkit.getPluginManager().registerEvents(new SetLimit(plugin, player, this, shopItem), plugin);
-                Bukkit.getScheduler().runTaskLater(plugin, () -> { event.getView().close(); }, 1L);
+                Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                    event.getView().close();
+                }, 1L);
         }
     }
 
-    /** Add everything from inventory to shop */
+    /**
+     * Add everything from inventory to shop
+     */
     public void quickAdd(Inventory inventory, ShopItem shopItem) {
         for (ItemStack inventoryStack : inventory.getContents()) {
-            if (inventoryStack == null) { continue; }
+            if (inventoryStack == null) {
+                continue;
+            }
             if (Methods.compareItems(shopItem.asItemStack(ShopItem.LoreType.ITEM), inventoryStack)) {
                 addToStorage(inventoryStack);
                 inventory.remove(inventoryStack);
@@ -276,7 +294,7 @@ public class PlayerShop extends VillagerShop {
                     collectMoney(player);
                 }
                 break;
-             //Increase time
+            //Increase time
             case 16:
                 if (!super.duration.equalsIgnoreCase("infinite")) {
                     increaseTime(player);
@@ -296,7 +314,9 @@ public class PlayerShop extends VillagerShop {
             event.setCancelled(true);
         }
         ItemStack current = event.getCurrentItem();
-        if (current == null) { return; }
+        if (current == null) {
+            return;
+        }
         NamespacedKey uiKey = new NamespacedKey(plugin, "vm-gui-item");
 
         event.setCancelled(current.getItemMeta().getPersistentDataContainer().has(uiKey, PersistentDataType.STRING));
@@ -310,7 +330,9 @@ public class PlayerShop extends VillagerShop {
         }
     }
 
-    /** Collects money */
+    /**
+     * Collects money
+     */
     private void collectMoney(Player player) {
         Economy economy = plugin.getEconomy();
         economy.depositPlayer(player, collectedMoney.doubleValue());
@@ -321,7 +343,9 @@ public class PlayerShop extends VillagerShop {
         super.editShopInv.setContents(EditShop.create(plugin, this).getContents());
     }
 
-    /** Deposits money to the Shop/Owner */
+    /**
+     * Deposits money to the Shop/Owner
+     */
     public void depositOwner(BigDecimal amount) {
         if (mainConfig.getBoolean("require_collect")) {
             super.collectedMoney = collectedMoney.add(amount);
@@ -332,7 +356,9 @@ public class PlayerShop extends VillagerShop {
         }
     }
 
-    /** Returns how many more of an certain ShopItem the owner wants to buy */
+    /**
+     * Returns how many more of an certain ShopItem the owner wants to buy
+     */
     @Override
     public int getAvailable(ShopItem shopItem) {
         Economy economy = plugin.getEconomy();
@@ -358,16 +384,20 @@ public class PlayerShop extends VillagerShop {
         int availableSlots = 0;
         for (ItemStack storageItem : inventory.getContents()) {
             if (storageItem == null) {
-                availableSlots ++;
+                availableSlots++;
                 continue;
             }
-            if (Methods.compareItems(storageItem, itemStack)) { availableSlots ++; }
+            if (Methods.compareItems(storageItem, itemStack)) {
+                availableSlots++;
+            }
         }
 
         return availableSlots * itemStack.getType().getMaxStackSize() - inStorage;
     }
 
-    /** Buy shop */
+    /**
+     * Buy shop
+     */
     public void buyShop(Player player) {
         Economy economy = plugin.getEconomy();
         if (plugin.getConfig().getBoolean("buy_shop_permission") && !player.hasPermission("villagermarket.buy_shop")) {
@@ -396,7 +426,9 @@ public class PlayerShop extends VillagerShop {
     }
 
 
-    /** Sell shop */
+    /**
+     * Sell shop
+     */
     public void abandon() {
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(ownerUUID));
         Economy economy = plugin.getEconomy();
@@ -405,14 +437,16 @@ public class PlayerShop extends VillagerShop {
         if (entity != null) {
             if (plugin.isCitizensEnabled() && CitizensAPI.getNPCRegistry().isNPC(entity)) {
                 CitizensAPI.getNPCRegistry().getNPC(entity).setName(new ColorBuilder(plugin).path("villager.name_available").build());
-            } else if (entity instanceof Villager){
+            } else if (entity instanceof Villager) {
                 Villager villager = (Villager) entity;
                 entity.setCustomName(new ColorBuilder(plugin).path("villager.name_available").build());
                 villager.setProfession(Villager.Profession.NONE);
             }
         }
 
-        if (cost != -1) { economy.depositPlayer(offlinePlayer, ((double) getCost() * (mainConfig.getDouble("refund_percent") / 100)) * timesRented); }
+        if (cost != -1) {
+            economy.depositPlayer(offlinePlayer, ((double) getCost() * (mainConfig.getDouble("refund_percent") / 100)) * timesRented);
+        }
         economy.depositPlayer(offlinePlayer, collectedMoney.doubleValue());
 
         List<ItemStack> storage = filteredStorage();
@@ -441,7 +475,9 @@ public class PlayerShop extends VillagerShop {
         updateRedstone(false);
     }
 
-    /** Sells/Removes the Player Shop */
+    /**
+     * Sells/Removes the Player Shop
+     */
     public void sell(Player player) {
         abandon();
 
@@ -450,20 +486,27 @@ public class PlayerShop extends VillagerShop {
         if (cost != -1) {
             player.sendMessage(new ColorBuilder(plugin).path("messages.sold_shop").addPrefix().build());
         } else {
-            Entity villager = Bukkit.getEntity(entityUUID);
-            villager.getWorld().dropItemNaturally(villager.getLocation(), Methods.villagerShopItem(plugin, shopSize / 9, storageSize / 9, 1));
-            if (plugin.isCitizensEnabled() && CitizensAPI.getNPCRegistry().isNPC(villager)) {
-                NPC npc = CitizensAPI.getNPCRegistry().getNPC(villager);
-                npc.destroy();
-            } else {
-                villager.remove();
-            }
-            file.delete();
-            VMPlugin.shops.remove(this);
+            removeShop();
         }
     }
 
-    /** Increase rent time */
+
+    public void removeShop() {
+        Entity villager = Bukkit.getEntity(entityUUID);
+        villager.getWorld().dropItemNaturally(villager.getLocation(), Methods.villagerShopItem(plugin, shopSize / 9, storageSize / 9, 1));
+        if (plugin.isCitizensEnabled() && CitizensAPI.getNPCRegistry().isNPC(villager)) {
+            NPC npc = CitizensAPI.getNPCRegistry().getNPC(villager);
+            npc.destroy();
+        } else {
+            villager.remove();
+        }
+        file.delete();
+        VMPlugin.shops.remove(this);
+    }
+
+    /**
+     * Increase rent time
+     */
     public void increaseTime(Player player) {
         Timestamp newExpire = new Timestamp(expireDate.getTime() + (seconds * 1000L));
         Date date = new Date();
@@ -480,18 +523,22 @@ public class PlayerShop extends VillagerShop {
         economy.withdrawPlayer(player, cost);
         this.expireDate = newExpire;
         this.editShopInv.setContents(EditShop.create(plugin, this).getContents());
-        this.timesRented ++;
+        this.timesRented++;
 
         player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.increase_time")), 1, 1);
     }
 
-    /** Returns true if rent has expired, false if not */
+    /**
+     * Returns true if rent has expired, false if not
+     */
     public boolean hasExpired() {
         if (expireDate.getTime() == 0L) return false;
         return expireDate.before(new Date());
     }
 
-    /** Sets owner and changes name */
+    /**
+     * Sets owner and changes name
+     */
     public void setOwner(Player player) {
         Entity villager = Bukkit.getEntity(entityUUID);
         String name = new ColorBuilder(plugin).path("villager.name_taken").replace("%player%", player.getName()).build();
@@ -504,15 +551,23 @@ public class PlayerShop extends VillagerShop {
         this.ownerName = (player.getName());
     }
 
-    /** Adds trusted to the trusted list */
+    /**
+     * Adds trusted to the trusted list
+     */
     public void addTrusted(Player player) {
         super.trusted.add(player.getUniqueId().toString());
     }
-    /** Removes trusted from the trusted list */
+
+    /**
+     * Removes trusted from the trusted list
+     */
     public void removeTrusted(Player player) {
         super.trusted.remove(player.getUniqueId().toString());
     }
-    /** Returns true if player is trusted, false if not */
+
+    /**
+     * Returns true if player is trusted, false if not
+     */
     public boolean isTrusted(Player player) {
         return trusted.contains(player.getUniqueId().toString());
     }

@@ -3,25 +3,20 @@ package me.bestem0r.villagermarket.commands.subcommands;
 import me.bestem0r.villagermarket.VMPlugin;
 import me.bestem0r.villagermarket.commands.CommandModule;
 import me.bestem0r.villagermarket.commands.SubCommand;
-import me.bestem0r.villagermarket.utilities.ColorBuilder;
 import me.bestem0r.villagermarket.utilities.Methods;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ItemCommand implements SubCommand {
 
-    private CommandModule commandModule;
     private final VMPlugin plugin;
+    private CommandModule commandModule;
 
     public ItemCommand(VMPlugin plugin) {
         this.plugin = plugin;
@@ -37,7 +32,8 @@ public class ItemCommand implements SubCommand {
                 return list;
             case 3:
                 return null;
-            case 4: case 5:
+            case 4:
+            case 5:
                 list.add("infinite");
                 list.add("1");
                 list.add("2");

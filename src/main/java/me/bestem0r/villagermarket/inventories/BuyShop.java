@@ -13,7 +13,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class BuyShop {
 
-    private BuyShop() {}
+    private BuyShop() {
+    }
 
     public static Inventory create(JavaPlugin plugin, VillagerShop villagerShop) {
         Inventory inventory = Bukkit.createInventory(null, 9, new ColorBuilder(plugin).path("menus.buy_shop.title").build());

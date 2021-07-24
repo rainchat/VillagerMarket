@@ -26,7 +26,9 @@ public class InventoryClick implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if ((Player) event.getWhoClicked() != this.player) { return; }
+        if (event.getWhoClicked() != this.player) {
+            return;
+        }
 
         event.setCancelled(event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY && shopMenu != ShopMenu.STORAGE);
 
@@ -73,16 +75,23 @@ public class InventoryClick implements Listener {
                 break;
         }
     }
+
     @EventHandler
     public void onDrag(InventoryDragEvent event) {
-        if ((Player) event.getWhoClicked() != this.player) { return; }
-        if (shopMenu == ShopMenu.STORAGE) { return; }
+        if (event.getWhoClicked() != this.player) {
+            return;
+        }
+        if (shopMenu == ShopMenu.STORAGE) {
+            return;
+        }
         event.setCancelled(true);
     }
 
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
-        if ((Player) event.getPlayer() != this.player) { return; }
+        if (event.getPlayer() != this.player) {
+            return;
+        }
         HandlerList.unregisterAll(this);
     }
 }

@@ -24,33 +24,22 @@ import java.util.HashMap;
 
 public class Shopfront {
 
-    public enum Type {
-        EDITOR,
-        CUSTOMER,
-        DETAILED
-    }
-
     private final ShopfrontHolder holder;
-
     private final Inventory editorInventory;
     private final Inventory customerInventory;
     private final Inventory detailedInventory;
-
-    private ItemStack back;
-    private ItemStack filler;
-    private ItemStack next;
-    private ItemStack previous;
-    private ItemStack details;
-
     private final VMPlugin plugin;
     private final VillagerShop shop;
     private final int page;
     private final boolean isInfinite;
     private final int size;
-
     private final NamespacedKey guiKey;
-
     private final HashMap<Integer, ShopItem> items = new HashMap<>();
+    private ItemStack back;
+    private ItemStack filler;
+    private ItemStack next;
+    private ItemStack previous;
+    private ItemStack details;
 
     public Shopfront(VMPlugin plugin, ShopfrontHolder holder, VillagerShop shop, int page) {
         this.plugin = plugin;
@@ -98,7 +87,9 @@ public class Shopfront {
             int start = page * 45;
             int end = start + 44;
             for (int slot : shop.getItemList().keySet()) {
-                if (slot < start || slot > end) { continue; }
+                if (slot < start || slot > end) {
+                    continue;
+                }
                 items.put(slot - start, shop.getItemList().get(slot));
             }
         } else {
@@ -123,6 +114,7 @@ public class Shopfront {
         buildBottom(customerInventory);
         customerInventory.setItem(size - 1, details);
     }
+
     private void updateDetailedInventory() {
         detailedInventory.clear();
         for (Integer slot : items.keySet()) {
@@ -132,6 +124,7 @@ public class Shopfront {
         buildBottom(detailedInventory);
         detailedInventory.setItem(size - 1, details);
     }
+
     private void updateEditorInventory() {
         editorInventory.clear();
         for (Integer slot : items.keySet()) {
@@ -149,6 +142,7 @@ public class Shopfront {
         detailedInventory.setItem(50, next);
         editorInventory.setItem(50, next);
     }
+
     public void removeNext() {
         customerInventory.setItem(50, filler);
         detailedInventory.setItem(50, filler);
@@ -171,7 +165,7 @@ public class Shopfront {
 
     private void buildBottom(Inventory inventory) {
         if (isInfinite) {
-            for (int i = inventory.getSize() - 9; i < inventory.getSize(); i ++) {
+            for (int i = inventory.getSize() - 9; i < inventory.getSize(); i++) {
                 inventory.setItem(i, filler);
             }
             if (page != 0) {
@@ -195,6 +189,12 @@ public class Shopfront {
         itemStack.setItemMeta(itemMeta);
     }
 
+    public enum Type {
+        EDITOR,
+        CUSTOMER,
+        DETAILED
+    }
+
     private class ClickListener implements Listener {
 
         private final Player player;
@@ -207,8 +207,12 @@ public class Shopfront {
 
         @EventHandler
         public void onClick(InventoryClickEvent event) {
-            if (this.player != event.getWhoClicked()) { return; }
-            if (event.getRawSlot() == -1) { return; }
+            if (this.player != event.getWhoClicked()) {
+                return;
+            }
+            if (event.getRawSlot() == -1) {
+                return;
+            }
 
             ItemStack current = event.getCurrentItem();
 
@@ -239,8 +243,7 @@ public class Shopfront {
                         shop.openInventory(player, ShopMenu.EDIT_SHOP);
                     } else if (event.getClick() == ClickType.RIGHT) {
                         event.getView().close();
-                    }
-                    else {
+                    } else {
                         open(player, (type == Type.CUSTOMER ? Type.DETAILED : Type.CUSTOMER));
                     }
                 }
@@ -268,13 +271,17 @@ public class Shopfront {
 
         @EventHandler
         public void onDrag(InventoryDragEvent event) {
-            if ((Player) event.getWhoClicked() != this.player) { return; }
+            if (event.getWhoClicked() != this.player) {
+                return;
+            }
             event.setCancelled(true);
         }
 
         @EventHandler
         public void onClose(InventoryCloseEvent event) {
-            if (this.player != event.getPlayer()) { return; }
+            if (this.player != event.getPlayer()) {
+                return;
+            }
             HandlerList.unregisterAll(this);
         }
     }

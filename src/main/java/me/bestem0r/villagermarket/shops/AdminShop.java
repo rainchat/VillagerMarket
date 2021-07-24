@@ -31,7 +31,9 @@ public class AdminShop extends VillagerShop {
         NamespacedKey key = new NamespacedKey(plugin, "villagermarket-command");
         for (int slot : itemList.keySet()) {
             ShopItem shopItem = itemList.get(slot);
-            if (shopItem == null) { continue; }
+            if (shopItem == null) {
+                continue;
+            }
             ItemMeta itemMeta = shopItem.getItemMeta();
             if (itemMeta.getPersistentDataContainer().has(key, PersistentDataType.STRING)) {
                 shopItem.setCommand(itemMeta.getPersistentDataContainer().get(key, PersistentDataType.STRING));
@@ -40,7 +42,9 @@ public class AdminShop extends VillagerShop {
         shopfrontHolder.update();
     }
 
-    /** Buys item/command from the admin shop */
+    /**
+     * Buys item/command from the admin shop
+     */
     @Override
     protected void buyItem(int slot, Player player) {
         ShopItem shopItem = itemList.get(slot);
@@ -76,7 +80,9 @@ public class AdminShop extends VillagerShop {
 
     }
 
-    /** Sells item to the admin shop */
+    /**
+     * Sells item to the admin shop
+     */
     @Override
     protected void sellItem(int slot, Player player) {
         ShopItem shopItem = itemList.get(slot);
@@ -124,7 +130,9 @@ public class AdminShop extends VillagerShop {
         return 0;
     }
 
-    /** Runs when a Player wants to buy a command */
+    /**
+     * Runs when a Player wants to buy a command
+     */
     public void buyCommand(Player player, ShopItem shopItem) {
         Economy economy = plugin.getEconomy();
 
@@ -142,7 +150,9 @@ public class AdminShop extends VillagerShop {
         shopItem.increasePlayerLimit(player);
     }
 
-    /** Called when a player with villagermarket.admin clicks in the edit shop menu */
+    /**
+     * Called when a player with villagermarket.admin clicks in the edit shop menu
+     */
     @Override
     public void editShopInteract(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();

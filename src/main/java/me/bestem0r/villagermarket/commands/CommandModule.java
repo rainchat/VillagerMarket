@@ -10,7 +10,10 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class CommandModule implements CommandExecutor, TabCompleter {
@@ -18,55 +21,7 @@ public class CommandModule implements CommandExecutor, TabCompleter {
     private Map<String, SubCommand> subCommands;
     private JavaPlugin plugin;
 
-    private CommandModule() {}
-
-    public static class Builder {
-
-        private final JavaPlugin plugin;
-        private final Map<String, SubCommand> subCommands = new HashMap<>();
-
-        public Builder(JavaPlugin plugin) {
-            this.plugin = plugin;
-        }
-
-        public Builder addSubCommand(String label, SubCommand subCommand) {
-            subCommands.put(label, subCommand);
-            return this;
-        }
-        public CommandModule build() {
-            CommandModule commandModule = new CommandModule();
-            subCommands.forEach((k, v) -> v.setModule(commandModule));
-            commandModule.subCommands = subCommands;
-            commandModule.plugin = plugin;
-            return commandModule;
-        }
-    }
-
-    private static class HelpCommand implements SubCommand {
-        private CommandModule commandModule;
-
-        @Override
-        public List<String> getCompletion(int index, String[] args) {
-            return new ArrayList<>(); }
-
-        @Override
-        public void run(CommandSender sender, String[] args) {
-            List<String> help = new ArrayList<>();
-            help.add("§bVillagerMarket Commands:");
-            commandModule.subCommands.forEach((k, v) -> {
-                help.add("> " + "§e" + ChatColor.translateAlternateColorCodes('&', v.getDescription()));
-            });
-            help.forEach(s -> commandModule.commandOutput(sender, s));
-        }
-        @Override
-        public void setModule(CommandModule module) {
-            this.commandModule = module;
-        }
-
-        @Override
-        public String getDescription() {
-            return "List all of SpawnerCollectors' commands";
-        }
+    private CommandModule() {
     }
 
     public void register(String command) {
@@ -122,5 +77,57 @@ public class CommandModule implements CommandExecutor, TabCompleter {
             return subCommands.get(args[0]).getCompletion(args.length - 2, args);
         }
         return null;
+    }
+
+    public static class Builder {
+
+        private final JavaPlugin plugin;
+        private final Map<String, SubCommand> subCommands = new HashMap<>();
+
+        public Builder(JavaPlugin plugin) {
+            this.plugin = plugin;
+        }
+
+        public Builder addSubCommand(String label, SubCommand subCommand) {
+            subCommands.put(label, subCommand);
+            return this;
+        }
+
+        public CommandModule build() {
+            CommandModule commandModule = new CommandModule();
+            subCommands.forEach((k, v) -> v.setModule(commandModule));
+            commandModule.subCommands = subCommands;
+            commandModule.plugin = plugin;
+            return commandModule;
+        }
+    }
+
+    private static class HelpCommand implements SubCommand {
+        private CommandModule commandModule;
+
+        @Override
+        public List<String> getCompletion(int index, String[] args) {
+            return new ArrayList<>();
+        }
+
+        @Override
+        public void run(CommandSender sender, String[] args) {
+            List<String> help = new ArrayList<>();
+            help.add("§bVillagerMarket Commands:");
+            commandModule.subCommands.forEach((k, v) -> {
+                help.add("> " + "§e" + ChatColor.translateAlternateColorCodes('&', v.getDescription()));
+            });
+            help.forEach(s -> commandModule.commandOutput(sender, s));
+        }
+
+        @Override
+        public void setModule(CommandModule module) {
+            this.commandModule = module;
+        }
+
+        @Override
+        public String getDescription() {
+            return "List all of SpawnerCollectors' commands";
+        }
     }
 }

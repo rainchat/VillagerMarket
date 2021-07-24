@@ -1,6 +1,5 @@
 package me.bestem0r.villagermarket.shops;
 
-import com.sk89q.worldguard.bukkit.event.BulkEvent;
 import me.bestem0r.villagermarket.EntityInfo;
 import me.bestem0r.villagermarket.VMPlugin;
 import me.bestem0r.villagermarket.events.InventoryClick;
@@ -47,46 +46,31 @@ import java.util.UUID;
 
 public abstract class VillagerShop {
 
+    protected final List<String> trusted;
+    protected final ShopfrontHolder shopfrontHolder;
+    protected final VMPlugin plugin;
+    private final EntityInfo entityInfo;
     protected String ownerUUID;
     protected String ownerName;
     protected UUID entityUUID;
-    private final EntityInfo entityInfo;
-
     protected String duration;
     protected int seconds;
     protected int timesRented;
     protected Timestamp expireDate;
-
     protected int cost;
     protected BigDecimal collectedMoney = BigDecimal.valueOf(0);
-    protected final List<String> trusted;
-
     protected HashMap<Integer, ShopItem> itemList = new HashMap<>();
-
     protected int shopSize;
     protected int storageSize;
-
     protected File file;
     protected FileConfiguration config;
     protected FileConfiguration mainConfig;
-
     protected Inventory buyShopInv;
     protected Inventory editShopInv;
     protected List<Inventory> storageInventories;
-
-    protected final ShopfrontHolder shopfrontHolder;
-
     protected Inventory editVillagerInv;
     protected Inventory sellShopInv;
-
     protected ShopStats shopStats;
-
-    protected final VMPlugin plugin;
-
-    public enum VillagerType {
-        ADMIN,
-        PLAYER
-    }
 
     public VillagerShop(VMPlugin plugin, File file) {
         this.plugin = plugin;
@@ -94,7 +78,7 @@ public abstract class VillagerShop {
         this.file = file;
         this.config = YamlConfiguration.loadConfiguration(file);
         this.entityUUID = UUID.fromString(file.getName().substring(0, file.getName().indexOf('.')));
-        this.entityInfo = new EntityInfo(plugin, config, entityUUID);
+        this.entityInfo = new EntityInfo(plugin, config, this);
 
         this.ownerUUID = config.getString("ownerUUID");
         this.ownerName = config.getString("ownerName");
@@ -134,7 +118,9 @@ public abstract class VillagerShop {
 
     }
 
-    /** Populates ItemList of shop items */
+    /**
+     * Populates ItemList of shop items
+     */
     private void buildItemList() {
         if (config.getList("for_sale") != null) {
             Bukkit.getLogger().warning("[VillagerMarket] Old shop file detected! Converting: " + entityUUID);
@@ -147,11 +133,15 @@ public abstract class VillagerShop {
         }
         VillagerType type = (this instanceof AdminShop ? VillagerType.ADMIN : VillagerType.PLAYER);
         ConfigurationSection section = config.getConfigurationSection("items_for_sale");
-        if (section == null) { return; }
+        if (section == null) {
+            return;
+        }
 
         for (String slot : section.getKeys(false)) {
             ItemStack itemStack = config.getItemStack("items_for_sale." + slot + ".item");
-            if (itemStack == null) { continue; }
+            if (itemStack == null) {
+                continue;
+            }
             ShopItem shopItem = new ShopItem.Builder(plugin, itemStack)
                     .price(new BigDecimal(config.getString("items_for_sale." + slot + ".price")))
                     .villagerType(type)
@@ -175,10 +165,12 @@ public abstract class VillagerShop {
         List<String> modeList = config.getStringList("modes");
         List<Integer> maxList = config.getIntegerList("max_buy");
         List<ItemStack> itemList = (List<ItemStack>) this.config.getList("for_sale");
-        if (itemList == null) { return; }
+        if (itemList == null) {
+            return;
+        }
         VillagerType type = (this instanceof AdminShop ? VillagerType.ADMIN : VillagerType.PLAYER);
 
-        for (int i = 0; i < itemList.size(); i ++) {
+        for (int i = 0; i < itemList.size(); i++) {
             double price = (priceList.size() > i ? priceList.get(i) : 0.0);
             int max = (maxList.size() > i ? maxList.get(i) : 0);
             ShopItem.Mode mode = (modeList.size() > i ? ShopItem.Mode.valueOf(modeList.get(i)) : ShopItem.Mode.SELL);
@@ -202,13 +194,20 @@ public abstract class VillagerShop {
         this.file = (new File(plugin.getDataFolder() + "/Shops/" + uuid + ".yml"));
     }
 
-    /** Abstract Methods */
+    /**
+     * Abstract Methods
+     */
     protected abstract void buyItem(int slot, Player player);
+
     protected abstract void sellItem(int slot, Player player);
+
     protected abstract void shiftFunction(InventoryClickEvent event, ShopItem shopItem);
+
     public abstract int getAvailable(ShopItem shopItem);
 
-    /** Inventory methods */
+    /**
+     * Inventory methods
+     */
     public void openInventory(Player player, ShopMenu shopMenu) {
         switch (shopMenu) {
             case STORAGE:
@@ -233,12 +232,16 @@ public abstract class VillagerShop {
         Bukkit.getPluginManager().registerEvents(new InventoryClick(player, this, shopMenu), plugin);
     }
 
-    /** Runs when customer interacts with shopfront menu */
+    /**
+     * Runs when customer interacts with shopfront menu
+     */
     public void customerInteract(InventoryClickEvent event, int slot) {
         Player player = (Player) event.getWhoClicked();
         ShopItem shopItem = itemList.get(slot);
 
-        if (shopItem == null) { return; }
+        if (shopItem == null) {
+            return;
+        }
         event.setCancelled(true);
         switch (shopItem.getMode()) {
             case BUY:
@@ -277,9 +280,10 @@ public abstract class VillagerShop {
         }
         return storage;
     }
+
     protected void removeItems(Inventory inventory, ItemStack item) {
         int count = item.getAmount();
-        for (int i = 0; i < inventory.getContents().length; i ++) {
+        for (int i = 0; i < inventory.getContents().length; i++) {
             ItemStack stored = inventory.getItem(i);
             if (Methods.compareItems(stored, item)) {
                 if (stored.getAmount() > count) {
@@ -293,10 +297,14 @@ public abstract class VillagerShop {
         }
     }
 
-    /** Runs when owner interacts with edit shop menu */
+    /**
+     * Runs when owner interacts with edit shop menu
+     */
     public abstract void editShopInteract(InventoryClickEvent event);
 
-    /** Runs when owner interacts with edit shopfront menu */
+    /**
+     * Runs when owner interacts with edit shopfront menu
+     */
     public void editorInteract(InventoryClickEvent event, int slot) {
         Player player = (Player) event.getWhoClicked();
         String cancel = mainConfig.getString("cancel");
@@ -322,7 +330,9 @@ public abstract class VillagerShop {
             }
             event.getView().close();
         } else {
-            if (shopItem == null) { return; }
+            if (shopItem == null) {
+                return;
+            }
 
             //Quick add or change buy limit
             if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
@@ -357,7 +367,9 @@ public abstract class VillagerShop {
         }
     }
 
-    /** Runs when player interacts with change profession menu */
+    /**
+     * Runs when player interacts with change profession menu
+     */
     public void editVillagerInteract(InventoryClickEvent event) {
         if (event.getRawSlot() > 17) return;
         event.setCancelled(true);
@@ -393,14 +405,18 @@ public abstract class VillagerShop {
         player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.change_profession")), 0.5f, 1);
     }
 
-    /** Sends stats message to Player */
+    /**
+     * Sends stats message to Player
+     */
     public void sendStats(Player player) {
-        for (String line: shopStats.getStats()) {
+        for (String line : shopStats.getStats()) {
             player.sendMessage(line);
         }
     }
 
-    /** Save method */
+    /**
+     * Save method
+     */
     public void save() {
         config.set("ownerUUID", ownerUUID);
         config.set("ownerName", ownerName);
@@ -421,7 +437,9 @@ public abstract class VillagerShop {
         config.set("items_for_sale", null);
         for (Integer slot : itemList.keySet()) {
             ShopItem shopItem = itemList.get(slot);
-            if (shopItem == null) { continue; }
+            if (shopItem == null) {
+                continue;
+            }
             config.set("items_for_sale." + slot + ".item", shopItem.asItemStack(ShopItem.LoreType.ITEM));
             config.set("items_for_sale." + slot + ".price", shopItem.getPrice());
             config.set("items_for_sale." + slot + ".mode", shopItem.getMode().toString());
@@ -439,7 +457,9 @@ public abstract class VillagerShop {
         }
     }
 
-    /** Remove ItemStack from stock method */
+    /**
+     * Remove ItemStack from stock method
+     */
     public void removeFromStock(ItemStack itemStack) {
         for (Inventory storageMenu : storageInventories) {
             if (storageMenu.containsAtLeast(itemStack, itemStack.getAmount())) {
@@ -447,10 +467,12 @@ public abstract class VillagerShop {
                 break;
             }
         }
-       shopfrontHolder.update();
+        shopfrontHolder.update();
     }
 
-    /** Reload all inventories */
+    /**
+     * Reload all inventories
+     */
     public void reload() {
         this.mainConfig = plugin.getConfig();
         this.buyShopInv.setContents(BuyShop.create(plugin, this).getContents());
@@ -460,7 +482,9 @@ public abstract class VillagerShop {
         shopfrontHolder.reload();
     }
 
-    /** Returns amount of ItemStack in storage */
+    /**
+     * Returns amount of ItemStack in storage
+     */
     public int getAmountInStorage(ItemStack itemStack) {
         int amount = 0;
         for (Inventory storageMenu : storageInventories) {
@@ -469,11 +493,15 @@ public abstract class VillagerShop {
         return amount;
     }
 
-    /** Returns amount of ItemStack in specified Inventory */
+    /**
+     * Returns amount of ItemStack in specified Inventory
+     */
     protected int getAmountInventory(ItemStack itemStack, Inventory inventory) {
         int amount = 0;
         for (ItemStack storageStack : inventory.getContents()) {
-            if (storageStack == null) { continue; }
+            if (storageStack == null) {
+                continue;
+            }
 
             if (Methods.compareItems(storageStack, itemStack)) {
                 amount = amount + storageStack.getAmount();
@@ -482,7 +510,9 @@ public abstract class VillagerShop {
         return amount;
     }
 
-    /** Adds shopItem to player's inventory and drops overflowing items */
+    /**
+     * Adds shopItem to player's inventory and drops overflowing items
+     */
     protected void giveShopItem(Player player, ShopItem shopItem) {
         ItemStack itemStack = shopItem.asItemStack(ShopItem.LoreType.ITEM);
         HashMap<Integer, ItemStack> itemsLeft = player.getInventory().addItem(itemStack);
@@ -522,40 +552,57 @@ public abstract class VillagerShop {
     public String getOwnerUUID() {
         return ownerUUID;
     }
+
     public int getStorageSize() {
         return storageSize;
     }
+
     public int getShopSize() {
         return shopSize;
     }
+
     public Timestamp getExpireDate() {
         return expireDate;
     }
+
     public String getDuration() {
         return duration;
     }
+
     public int getCost() {
         return cost;
     }
+
     public HashMap<Integer, ShopItem> getItemList() {
         return itemList;
     }
+
     public UUID getEntityUUID() {
         return entityUUID;
     }
+
     public int getTimesRented() {
         return timesRented;
     }
+
     public BigDecimal getCollectedMoney() {
         return collectedMoney;
     }
+
     public ShopfrontHolder getShopfrontHolder() {
         return shopfrontHolder;
     }
+
     public EntityInfo getEntityInfo() {
         return entityInfo;
     }
+
     public String getOwnerName() {
         return ownerName;
+    }
+
+    public enum VillagerType {
+        ADMIN,
+        PLAYER
     }
 }

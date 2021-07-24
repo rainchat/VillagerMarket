@@ -7,6 +7,7 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import me.bestem0r.villagermarket.UpdateChecker;
 import me.bestem0r.villagermarket.VMPlugin;
+import me.bestem0r.villagermarket.api.events.VmEggSpawnEvent;
 import me.bestem0r.villagermarket.inventories.Shopfront;
 import me.bestem0r.villagermarket.shops.AdminShop;
 import me.bestem0r.villagermarket.shops.PlayerShop;
@@ -14,10 +15,7 @@ import me.bestem0r.villagermarket.shops.ShopMenu;
 import me.bestem0r.villagermarket.shops.VillagerShop;
 import me.bestem0r.villagermarket.utilities.ColorBuilder;
 import me.bestem0r.villagermarket.utilities.Methods;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -35,9 +33,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.awt.*;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,10 +44,12 @@ public class PlayerEvents implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler (ignoreCancelled = true, priority = EventPriority.NORMAL)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void playerRightClick(PlayerInteractEntityEvent event) {
         Player player = event.getPlayer();
-        if (event.getHand() == EquipmentSlot.OFF_HAND) { return; }
+        if (event.getHand() == EquipmentSlot.OFF_HAND) {
+            return;
+        }
         VillagerShop villagerShop = Methods.shopFromUUID(event.getRightClicked().getUniqueId());
         if (villagerShop != null) {
             event.setCancelled(true);
@@ -128,11 +125,20 @@ public class PlayerEvents implements Listener {
             int shopSize = Integer.parseInt(data.split("-")[0]);
             int storageSize = Integer.parseInt(data.split("-")[1]);
 
-            UUID villagerUUID = Methods.spawnShop(plugin, player.getLocation(), "player");
+
+            VmEggSpawnEvent vmEggSpawnEvent = new VmEggSpawnEvent(player, event.getClickedBlock().getLocation());
+            Bukkit.getServer().getPluginManager().callEvent(vmEggSpawnEvent);
+
+            if (vmEggSpawnEvent.isCancelled()) return;
+
+            Location location = event.getClickedBlock().getLocation().clone().add(0.5, 1.0, 0.5);
+
+            UUID villagerUUID = Methods.spawnShop(plugin, event.getClickedBlock().getLocation().clone().add(0.5, 1.0, 0.5), "player");
             if (Bukkit.getEntity(villagerUUID) != null) {
                 Methods.newShopConfig(plugin, villagerUUID, storageSize, shopSize, -1, VillagerShop.VillagerType.PLAYER, "infinite");
                 PlayerShop playerShop = (PlayerShop) Methods.shopFromUUID(villagerUUID);
                 playerShop.setOwner(player);
+                playerShop.getEntityInfo().setLocation(location);
             } else {
                 Bukkit.getLogger().severe(ChatColor.RED + "[VillagerMarket] Unable to spawn Villager! Does WorldGuard deny mobs pawn?");
             }

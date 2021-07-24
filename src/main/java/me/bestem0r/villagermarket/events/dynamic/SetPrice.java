@@ -32,7 +32,7 @@ public class SetPrice implements Listener {
         this.builder = builder;
     }
 
-    @EventHandler (priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         if (event.getPlayer() != player) return;
 
@@ -77,9 +77,11 @@ public class SetPrice implements Listener {
     }
 
 
-    @EventHandler (priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onEntityInteract(PlayerInteractEntityEvent event) {
-        if (event.getPlayer() != player) { return; }
+        if (event.getPlayer() != player) {
+            return;
+        }
         VillagerShop villagerShop = Methods.shopFromUUID(event.getRightClicked().getUniqueId());
         if (villagerShop != null) {
             player.sendMessage(new ColorBuilder(plugin).path("messages.finish_process").addPrefix().build());
@@ -96,6 +98,7 @@ public class SetPrice implements Listener {
         }
         return true;
     }
+
     private Boolean hasComma(String string) {
         for (int i = 0; i < string.length(); i++) {
             char c = string.charAt(i);

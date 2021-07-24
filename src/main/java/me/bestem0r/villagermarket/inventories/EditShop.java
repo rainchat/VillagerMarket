@@ -17,7 +17,8 @@ import java.util.Date;
 
 public class EditShop {
 
-    private EditShop() {}
+    private EditShop() {
+    }
 
     public static Inventory create(JavaPlugin plugin, VillagerShop villagerShop) {
         Inventory inventory = Bukkit.createInventory(null, 27, new ColorBuilder(plugin).path("menus.edit_shop.title").build());
@@ -77,7 +78,7 @@ public class EditShop {
 
         ItemStack[] inventoryItems;
         if (villagerShop instanceof AdminShop) {
-            inventoryItems = new ItemStack[] {
+            inventoryItems = new ItemStack[]{
                     filler, filler, filler, filler, filler, filler, filler, filler, filler,
                     editShopfront,
                     previewShop,
@@ -91,7 +92,7 @@ public class EditShop {
                     filler, filler, filler, filler, filler, filler, filler, filler, back
             };
         } else {
-            inventoryItems = new ItemStack[] {
+            inventoryItems = new ItemStack[]{
                     filler, filler, filler, filler, filler, filler, filler, filler, filler,
                     editShopfront,
                     previewShop,

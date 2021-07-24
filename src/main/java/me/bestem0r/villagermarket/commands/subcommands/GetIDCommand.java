@@ -22,7 +22,7 @@ public class GetIDCommand implements SubCommand {
 
     private final JavaPlugin plugin;
 
-    public GetIDCommand(JavaPlugin plugin ) {
+    public GetIDCommand(JavaPlugin plugin) {
         this.plugin = plugin;
     }
 
@@ -61,7 +61,9 @@ public class GetIDCommand implements SubCommand {
 
         @EventHandler(priority = EventPriority.LOWEST)
         public void onInteract(PlayerInteractEntityEvent event) {
-            if (event.getPlayer() != player) { return; }
+            if (event.getPlayer() != player) {
+                return;
+            }
             event.setCancelled(true);
             VillagerShop villagerShop = Methods.shopFromUUID(event.getRightClicked().getUniqueId());
             if (villagerShop != null) {

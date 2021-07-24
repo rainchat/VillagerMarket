@@ -81,7 +81,7 @@ public class StorageBuilder {
 
             fillBottom(last, filler);
             last.setItem(size - 1, back);
-            setPersistentDataInt(previous, key, (Math.max(midPages, 0)) );
+            setPersistentDataInt(previous, key, (Math.max(midPages, 0)));
             last.setItem(48, previous);
 
             inventories.add(last);
@@ -97,7 +97,7 @@ public class StorageBuilder {
     }
 
     private void fillBottom(Inventory inventory, ItemStack itemStack) {
-        for (int i = inventory.getSize() - 9; i < inventory.getSize(); i ++) {
+        for (int i = inventory.getSize() - 9; i < inventory.getSize(); i++) {
             inventory.setItem(i, itemStack);
         }
     }

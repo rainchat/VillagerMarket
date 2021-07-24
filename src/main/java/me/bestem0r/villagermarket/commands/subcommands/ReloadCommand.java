@@ -29,7 +29,7 @@ public class ReloadCommand implements SubCommand {
         module.commandOutput(sender, new ColorBuilder(plugin).path("messages.reloaded").addPrefix().build());
         plugin.reload();
         plugin.saveLog();
-        plugin.shops.forEach((VillagerShop::reload));
+        VMPlugin.shops.forEach((VillagerShop::reload));
     }
 
     @Override

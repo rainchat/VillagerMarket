@@ -29,17 +29,13 @@ import java.util.*;
 
 public class VMPlugin extends JavaPlugin {
 
-    private Economy econ = null;
-
     public static final List<String> log = new ArrayList<>();
     public static final List<VillagerShop> shops = new ArrayList<>();
-
+    public static final HashMap<UUID, List<ItemStack>> abandonOffline = new HashMap<>();
+    private Economy econ = null;
     private boolean redstoneEnabled;
     private boolean regenVillagers;
-
     private boolean citizensEnabled;
-
-    public static final HashMap<UUID, List<ItemStack>> abandonOffline = new HashMap<>();
 
     @Override
     public void onEnable() {
@@ -82,7 +78,7 @@ public class VMPlugin extends JavaPlugin {
             String currentVersion = this.getDescription().getVersion();
             if (!currentVersion.equalsIgnoreCase(version)) {
                 String foundVersion = ChatColor.translateAlternateColorCodes('&', "&bA new version of VillagerMarket was found!");
-                String latestVersion = ChatColor.translateAlternateColorCodes('&',"&bLatest version: &a" + version + "&b.");
+                String latestVersion = ChatColor.translateAlternateColorCodes('&', "&bLatest version: &a" + version + "&b.");
                 String yourVersion = ChatColor.translateAlternateColorCodes('&', "&bYour version &c" + currentVersion + "&b.");
                 String downloadVersion = ChatColor.translateAlternateColorCodes('&', "&bGet it here for the latest features and bug fixes: &ehttps://www.spigotmc.org/resources/villager-market.82965/");
 
@@ -101,7 +97,7 @@ public class VMPlugin extends JavaPlugin {
             }
         }
 
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null){
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new Placeholders(this).register();
         }
 
@@ -144,12 +140,14 @@ public class VMPlugin extends JavaPlugin {
 
     public void reload() {
         reloadConfig();
-        this.regenVillagers =getConfig().getBoolean("villager_regen");
+        this.regenVillagers = getConfig().getBoolean("villager_regen");
         this.redstoneEnabled = getConfig().getBoolean("enable_redstone_output");
         this.citizensEnabled = Bukkit.getPluginManager().getPlugin("Citizens") != null;
     }
 
-    /** Setup Vault integration */
+    /**
+     * Setup Vault integration
+     */
     private void setupEconomy() {
         RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
         if (economyProvider != null) {
@@ -160,7 +158,9 @@ public class VMPlugin extends JavaPlugin {
 
     }
 
-    /** Adds new Villager to villagers HashMap */
+    /**
+     * Adds new Villager to villagers HashMap
+     */
     public void addVillager(UUID entityUUID, File file, VillagerShop.VillagerType type) {
         VillagerShop villagerShop = Methods.shopFromUUID(entityUUID);
         if (villagerShop != null) {
@@ -197,7 +197,9 @@ public class VMPlugin extends JavaPlugin {
         }
     }
 
-    /** Registers event listeners */
+    /**
+     * Registers event listeners
+     */
     private void registerEvents() {
         EntityEvents entityEvents = new EntityEvents(this);
         PlayerEvents playerEvents = new PlayerEvents(this);
@@ -208,7 +210,9 @@ public class VMPlugin extends JavaPlugin {
         pluginManager.registerEvents(new ChunkLoad(this), this);
     }
 
-    /** Thread runs save() method for all Villager Shops */
+    /**
+     * Thread runs save() method for all Villager Shops
+     */
     private void beginSaveThread() {
         long interval = 20 * 60 * getConfig().getLong("auto_save_interval");
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
@@ -218,7 +222,9 @@ public class VMPlugin extends JavaPlugin {
         }, 20L, interval);
     }
 
-    /** Thread updates redstone output for all Villagers */
+    /**
+     * Thread updates redstone output for all Villagers
+     */
     private void beginRedstoneThread() {
         long interval = 20 * getConfig().getLong("redstone_update_interval");
 
@@ -232,13 +238,17 @@ public class VMPlugin extends JavaPlugin {
         }, 20L, interval);
     }
 
-    /** Thread check if rent time has expired and runs abandon() method */
+    /**
+     * Thread check if rent time has expired and runs abandon() method
+     */
     private void beginExpireThread() {
         long interval = 20 * getConfig().getLong("expire_check_interval");
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
             for (VillagerShop villagerShop : VMPlugin.shops) {
-                if (!(villagerShop instanceof PlayerShop)) { continue; }
+                if (!(villagerShop instanceof PlayerShop)) {
+                    continue;
+                }
                 PlayerShop playerShop = (PlayerShop) villagerShop;
 
                 if (playerShop.hasExpired() && !villagerShop.getOwnerUUID().equals("null")) {
@@ -253,9 +263,11 @@ public class VMPlugin extends JavaPlugin {
         }, 20L, interval);
     }
 
-    /** Saves log to /log/ folder and clears log */
+    /**
+     * Saves log to /log/ folder and clears log
+     */
     public void saveLog() {
-        String fileName = new Date().toString().replace(":","-");
+        String fileName = new Date().toString().replace(":", "-");
         File file = new File(Bukkit.getServer().getPluginManager().getPlugin("VillagerMarket").getDataFolder() + "/logs/" + fileName + ".yml");
         FileConfiguration logConfig = YamlConfiguration.loadConfiguration(file);
         logConfig.set("log", log);
@@ -267,7 +279,9 @@ public class VMPlugin extends JavaPlugin {
         log.clear();
     }
 
-    /** Loads Villager Shops from /shops/ folder */
+    /**
+     * Loads Villager Shops from /shops/ folder
+     */
     private void loadConfigs() {
         Long before = new Date().getTime();
         File shopsFile = new File(Bukkit.getServer().getPluginManager().getPlugin("VillagerMarket").getDataFolder() + "/Shops/");
@@ -295,9 +309,11 @@ public class VMPlugin extends JavaPlugin {
     public Economy getEconomy() {
         return econ;
     }
+
     public boolean isRedstoneEnabled() {
         return redstoneEnabled;
     }
+
     public boolean isCitizensEnabled() {
         return citizensEnabled;
     }

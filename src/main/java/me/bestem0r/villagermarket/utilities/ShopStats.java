@@ -22,6 +22,7 @@ public class ShopStats {
         this.moneyEarned = config.getInt("stats.money_earned");
         this.moneySpent = config.getInt("stats.money_spent");
     }
+
     public ShopStats(JavaPlugin plugin) {
         this.plugin = plugin;
         this.itemsBought = 0;
@@ -30,10 +31,13 @@ public class ShopStats {
         this.moneySpent = 0;
     }
 
-    /** Adders */
+    /**
+     * Adders
+     */
     public void addSold(int amount) {
         itemsSold += amount;
     }
+
     public void addBought(int amount) {
         itemsBought += amount;
     }
@@ -41,14 +45,18 @@ public class ShopStats {
     public void addEarned(double amount) {
         moneyEarned += amount;
     }
+
     public void addSpent(double amount) {
         moneySpent += amount;
     }
 
-    /** Getters */
+    /**
+     * Getters
+     */
     public int getItemsSold() {
         return itemsSold;
     }
+
     public int getItemsBought() {
         return itemsBought;
     }
@@ -56,6 +64,7 @@ public class ShopStats {
     public double getMoneyEarned() {
         return moneyEarned;
     }
+
     public double getMoneySpent() {
         return moneySpent;
     }

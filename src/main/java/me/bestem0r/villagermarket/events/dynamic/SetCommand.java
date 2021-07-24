@@ -29,7 +29,9 @@ public class SetCommand implements Listener {
 
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
-        if (event.getPlayer() != this.player) { return; }
+        if (event.getPlayer() != this.player) {
+            return;
+        }
 
         String cancel = plugin.getConfig().getString("cancel");
         event.setCancelled(true);

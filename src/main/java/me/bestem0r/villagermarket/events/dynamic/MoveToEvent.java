@@ -11,8 +11,6 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import java.util.UUID;
-
 public class MoveToEvent implements Listener {
 
     private final Player player;
@@ -23,7 +21,7 @@ public class MoveToEvent implements Listener {
         this.villagerShop = villagerShop;
     }
 
-    @EventHandler (priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onInteract(PlayerInteractEvent event) {
         if (event.getPlayer() != player) return;
         if (event.getClickedBlock() == null) return;
